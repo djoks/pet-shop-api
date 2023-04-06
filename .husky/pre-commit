@@ -1,0 +1,34 @@
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+echo "Fixing code with PSR-12 preset..."
+./vendor/bin/pint -v 
+
+echo "Running static code analysis..."
+./vendor/bin/phpstan analyse && EXIT_CODE=$? && if [ $EXIT_CODE -gt 0 ]; then echo "Larastan analysis failed with error(s)"; exit 1; fi;
+
+# Run PHP Insights and capture output
+echo "Running code quality analysis..."
+INSIGHTS_OUTPUT=$(php artisan insights --format=json)
+
+# Extract quality gate score from output
+CODE_SCORE=$(php -r '$output = json_decode($argv[1], true); echo (int) $output["summary"]["code"];' "$INSIGHTS_OUTPUT")
+COMPLEXITY_SCORE=$(php -r '$output = json_decode($argv[1], true); echo (int) $output["summary"]["complexity"];' "$INSIGHTS_OUTPUT")
+ARCHITECTURE_SCORE=$(php -r '$output = json_decode($argv[1], true); echo (int) $output["summary"]["architecture"];' "$INSIGHTS_OUTPUT")
+STYLE_SCORE=$(php -r '$output = json_decode($argv[1], true); echo (int) $output["summary"]["style"];' "$INSIGHTS_OUTPUT")
+
+TOTAL_QUALITY_SCORE=$(echo "$CODE_SCORE + $COMPLEXITY_SCORE + $ARCHITECTURE_SCORE + $STYLE_SCORE" | bc)
+
+# Calculate average score
+AVERAGE_QUALITY_SCORE=$(echo "$TOTAL_QUALITY_SCORE / 4" | bc)
+
+# Check if average score is less than 85 and exit with an error status if it is
+if [ $AVERAGE_QUALITY_SCORE -lt 85 ]; then
+  echo "\nAverage quality score is less than 85 %. Please 'php artisan insights' and fix issues before committing.\n\n"
+  exit 1
+fi
+
+echo "\nAverage quality score is $AVERAGE_QUALITY_SCORE %. Committing...\n\n"
+
+# If average score is greater than or equal to 85, continue with commit
+exit 0

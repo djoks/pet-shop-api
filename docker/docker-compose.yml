@@ -1,0 +1,65 @@
+version: "3.9"
+services:
+  php:
+    build:
+      context: .
+      dockerfile: ./php/Dockerfile
+    volumes:
+      - ../:/var/www/html
+    depends_on:
+      - mysql
+      - redis
+    networks:
+      - app-network
+
+  nginx:
+    image: nginx:latest
+    ports:
+      - "80:80"
+    volumes:
+      - ../:/var/www/html
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
+    depends_on:
+      - php
+    networks:
+      - app-network
+
+  mysql:
+    image: mysql:8.0
+    hostname: mysql
+    command: --default-authentication-plugin=mysql_native_password --bind-address=0.0.0.0
+    environment:
+      MYSQL_ROOT_PASSWORD: secret
+      MYSQL_DATABASE: petshopdb_v1
+    volumes:
+      - mysql-data:/var/lib/mysql
+      - './mysql:/docker-entrypoint-initdb.d'
+    networks:
+      - app-network
+
+  redis:
+    image: redis:latest
+    networks:
+      - app-network
+
+  supervisor:
+    image: php:8.1-fpm
+    build:
+      context: .
+      dockerfile: ./php/Dockerfile
+    volumes:
+      - ../:/var/www/html
+      - ./crontab:/etc/cron.d
+    depends_on:
+      - php
+    environment:
+      - PATH=$PATH:/usr/local/bin
+    command: ["supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf", "-n", "-u", "www-data", "-i", "supervisor.pid", "-l", "/var/log/supervisor/supervisord.log", "-j", "/var/run/supervisor/supervisord.pid"]
+    networks:
+      - app-network
+
+volumes:
+  mysql-data:
+networks:
+  app-network:
+    driver: bridge
