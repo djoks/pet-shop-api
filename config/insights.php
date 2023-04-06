@@ -65,7 +65,9 @@ return [
     */
 
     'exclude' => [
-        //  'path/to/directory-or-file'
+        "app/Http/Kernel.php",
+        "app/Http/Middleware/RedirectIfAuthenticated.php",
+        "app/Providers/RouteServiceProvider.php"
     ],
 
     'add' => [
