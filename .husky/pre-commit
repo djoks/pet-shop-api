@@ -1,5 +1,22 @@
 #!/usr/bin/env sh
 . "$(dirname -- "$0")/_/husky.sh"
 
-./vendor/bin/phpstan analyse
-php artisan insights.
+echo "Running static code analysis..."
+./vendor/bin/phpstan analyse && EXIT_CODE=$? && if [ $EXIT_CODE -gt 0 ]; then echo "Larastan analysis failed with error(s)"; exit 1; fi;
+
+# Run PHP Insights and capture output
+echo "Running code quality analysis..."
+INSIGHTS_OUTPUT=$(php artisan insights)
+echo "$INSIGHTS_OUTPUT"
+
+# Extract quality gate score from output
+QUALITY_GATE_SCORE=$(echo "$INSIGHTS_OUTPUT" | grep -oP "(?<=\bQuality Gate:\s)[0-9]+")
+
+# Check if quality gate score is less than 85 and exit with an error status if it is
+if [ "$QUALITY_GATE_SCORE" -lt 85 ]; then
+  echo "Quality gate score is less than 85. Please fix issues before committing."
+  exit 1
+fi
+
+# If quality gate score is greater than or equal to 85, continue with commit
+exit 0
