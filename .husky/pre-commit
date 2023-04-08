@@ -2,7 +2,8 @@
 . "$(dirname -- "$0")/_/husky.sh"
 
 echo "Fixing code with PSR-12 preset..."
-./vendor/bin/pint -v 
+files=$(git diff --cached --name-only --diff-filter=ACMR -- '*.php');
+./vendor/bin/pint $files
 
 echo "Running static code analysis..."
 ./vendor/bin/phpstan analyse && EXIT_CODE=$? && if [ $EXIT_CODE -gt 0 ]; then echo "Larastan analysis failed with error(s)"; exit 1; fi;
