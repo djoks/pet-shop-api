@@ -1,15 +1,11 @@
 #!/usr/bin/env sh
 . "$(dirname -- "$0")/_/husky.sh"
 
-echo "Fixing code with PSR-12 preset..."
-files=$(git diff --cached --name-only --diff-filter=ACMR -- '*.php');
-./vendor/bin/pint $files
-
-echo "Running static code analysis..."
+echo "\nRunning static code analysis..."
 ./vendor/bin/phpstan analyse && EXIT_CODE=$? && if [ $EXIT_CODE -gt 0 ]; then echo "Larastan analysis failed with error(s)"; exit 1; fi;
 
 # Run PHP Insights and capture output
-echo "Running code quality analysis..."
+echo "\nRunning code quality analysis..."
 INSIGHTS_OUTPUT=$(php artisan insights --format=json)
 
 # Extract quality gate score from output
