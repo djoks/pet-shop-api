@@ -21,6 +21,11 @@ class Order extends Model
         'amount',
     ];
 
+    protected $casts = [
+        'products' => 'json',
+        'address' => 'json'
+    ];
+    
     /**
      * @return BelongsTo<User, Order>
      */

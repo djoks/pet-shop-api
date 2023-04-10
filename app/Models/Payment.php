@@ -16,6 +16,10 @@ class Payment extends Model
         'details',
     ];
 
+    protected $casts = [
+        'details' => 'json',
+    ];
+    
     /**
      * @return HasMany<Order>
      */
