@@ -1,31 +1,48 @@
 #!/usr/bin/env sh
 . "$(dirname -- "$0")/_/husky.sh"
 
-echo "\nRunning static code analysis..."
-docker exec docker-pet-php-container ./vendor/bin/phpstan analyse && EXIT_CODE=$? && if [ $EXIT_CODE -gt 0 ]; then echo "Larastan analysis failed with error(s)"; exit 1; fi;
+# Define color codes
+RED='\033[0;31m'
+YELLOW='\033[0;33m'
+GREEN='\033[0;32m'
+NC='\033[0m' # No Color
 
-# Run PHP Insights and capture output
-echo "\nRunning code quality analysis..."
-INSIGHTS_OUTPUT=$(docker exec docker-pet-php-container php artisan insights --format=json)
+STAGED_PHP_FILES=$(git diff --cached --name-only --diff-filter=ACMR -- '*.php')
+STAGED_OTHER_FILES=$(git diff --cached --name-only --diff-filter=ACMR)
 
-# Extract quality gate score from output
-CODE_SCORE=$(php -r '$output = json_decode($argv[1], true); echo (int) $output["summary"]["code"];' "$INSIGHTS_OUTPUT")
-COMPLEXITY_SCORE=$(php -r '$output = json_decode($argv[1], true); echo (int) $output["summary"]["complexity"];' "$INSIGHTS_OUTPUT")
-ARCHITECTURE_SCORE=$(php -r '$output = json_decode($argv[1], true); echo (int) $output["summary"]["architecture"];' "$INSIGHTS_OUTPUT")
-STYLE_SCORE=$(php -r '$output = json_decode($argv[1], true); echo (int) $output["summary"]["style"];' "$INSIGHTS_OUTPUT")
+if [ -n "$STAGED_PHP_FILES" ]; then
+    echo "${GREEN}\nRunning static code analysis...${NC}"
+    docker exec docker-pet-php-container ./vendor/bin/phpstan analyse $STAGED_PHP_FILES && EXIT_CODE=$? && if [ $EXIT_CODE -gt 0 ]; then echo "${RED}Larastan analysis failed with error(s)${NC}"; exit 1; fi;
 
-TOTAL_QUALITY_SCORE=$(echo "$CODE_SCORE + $COMPLEXITY_SCORE + $ARCHITECTURE_SCORE + $STYLE_SCORE" | bc)
+    # Run PHP Insights and capture output
+    echo "${GREEN}\nRunning code quality analysis...${NC}"
+    INSIGHTS_OUTPUT=$(docker exec docker-pet-php-container php artisan insights --format=json -- $STAGED_PHP_FILES)
 
-# Calculate average score
-AVERAGE_QUALITY_SCORE=$(echo "$TOTAL_QUALITY_SCORE / 4" | bc)
+    # Extract quality gate score from output
+    CODE_SCORE=$(php -r '$output = json_decode($argv[1], true); echo (int) $output["summary"]["code"];' "$INSIGHTS_OUTPUT")
+    COMPLEXITY_SCORE=$(php -r '$output = json_decode($argv[1], true); echo (int) $output["summary"]["complexity"];' "$INSIGHTS_OUTPUT")
+    ARCHITECTURE_SCORE=$(php -r '$output = json_decode($argv[1], true); echo (int) $output["summary"]["architecture"];' "$INSIGHTS_OUTPUT")
+    STYLE_SCORE=$(php -r '$output = json_decode($argv[1], true); echo (int) $output["summary"]["style"];' "$INSIGHTS_OUTPUT")
 
-# Check if average score is less than 85 and exit with an error status if it is
-if [ $AVERAGE_QUALITY_SCORE -lt 85 ]; then
-  echo "\nAverage quality score is less than 85 %. Please 'php artisan insights' and fix issues before committing.\n\n"
-  exit 1
+    TOTAL_QUALITY_SCORE=$(echo "$CODE_SCORE + $COMPLEXITY_SCORE + $ARCHITECTURE_SCORE + $STYLE_SCORE" | bc)
+
+    # Calculate average score
+    AVERAGE_QUALITY_SCORE=$(echo "$TOTAL_QUALITY_SCORE / 4" | bc)
+
+    # Check if average score is less than 85 and exit with an error status if it is
+    if [ $AVERAGE_QUALITY_SCORE -lt 85 ]; then
+      echo "${RED}\nAverage quality score is less than 85 %. Please 'php artisan insights' and fix issues before committing.\n\n${NC}"
+      exit 1
+    fi
+
+    echo "${GREEN}\nAverage quality score is $AVERAGE_QUALITY_SCORE %. Committing...\n\n${NC}"
+
+    # If average score is greater than or equal to 85, continue with commit
+    exit 0
+elif [ -n "$STAGED_OTHER_FILES" ]; then
+    echo "${YELLOW}\nNo PHP files staged, skipping static code and code quality analysis.\n${NC}"
+    exit 0
+else
+    echo "${YELLOW}\nNo staged files. Nothing to commit.\n${NC}"
+    exit 1
 fi
-
-echo "\nAverage quality score is $AVERAGE_QUALITY_SCORE %. Committing...\n\n"
-
-# If average score is greater than or equal to 85, continue with commit
-exit 0
