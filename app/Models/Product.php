@@ -19,6 +19,10 @@ class Product extends Model
         'metadata',
     ];
 
+    protected $casts = [
+        'metadata' => 'array',
+    ];
+    
     /**
      * @return BelongsTo<Category, Product>
      */

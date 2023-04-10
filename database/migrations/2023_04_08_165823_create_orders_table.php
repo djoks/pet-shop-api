@@ -12,9 +12,9 @@ return new class () extends Migration {
     {
         Schema::create('orders', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained();
-            $table->foreignId('order_status_id')->constrained();
-            $table->foreignId('payment_id')->constrained();
+            $table->string('user_uuid')->index();
+            $table->string('order_status_uuid')->index();
+            $table->string('payment_uuid')->index();
             $table->string('uuid')->unique();
             $table->json('products');
             $table->json('address');
