@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Order extends Model
 {
@@ -19,4 +20,28 @@ class Order extends Model
         'delivery_fee',
         'amount',
     ];
+
+    /**
+     * @return BelongsTo<User, Order>
+     */
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+
+    /**
+     * @return BelongsTo<OrderStatus, Order>
+     */
+    public function orderStatus()
+    {
+        return $this->belongsTo(OrderStatus::class);
+    }
+
+    /**
+     * @return BelongsTo<Payment, Order>
+     */
+    public function payment()
+    {
+        return $this->belongsTo(Payment::class);
+    }
 }
