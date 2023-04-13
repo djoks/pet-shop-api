@@ -2,14 +2,19 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Order extends Model
 {
     use HasFactory;
 
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var array<string>
+     */
     protected $fillable = [
         'user_id',
         'order_status_id',
@@ -21,15 +26,20 @@ class Order extends Model
         'amount',
     ];
 
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var array<string, string>
+     */
     protected $casts = [
         'products' => 'json',
-        'address' => 'json'
+        'address' => 'json',
     ];
-    
+
     /**
      * @return BelongsTo<User, Order>
      */
-    public function user()
+    public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
     }
@@ -37,7 +47,7 @@ class Order extends Model
     /**
      * @return BelongsTo<OrderStatus, Order>
      */
-    public function orderStatus()
+    public function orderStatus(): BelongsTo
     {
         return $this->belongsTo(OrderStatus::class);
     }
@@ -45,7 +55,7 @@ class Order extends Model
     /**
      * @return BelongsTo<Payment, Order>
      */
-    public function payment()
+    public function payment(): BelongsTo
     {
         return $this->belongsTo(Payment::class);
     }
