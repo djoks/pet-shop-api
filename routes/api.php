@@ -26,7 +26,7 @@ Route::prefix('v1')->group(function (): void {
     });
 
     Route::middleware(['auth.check'])->group(function (): void {
-        Route::prefix('admin')->group(function (): void {
+        Route::middleware(['admin.check'])->prefix('admin')->group(function (): void {
             Route::get('test', [AuthController::class, 'users']);
         });
     });
