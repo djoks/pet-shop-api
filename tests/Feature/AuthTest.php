@@ -23,20 +23,23 @@ class AuthTest extends TestCase
             'password' => Hash::make('admin'),
         ]);
 
-        $response = $this->postJson('/api/v1/admin/login', [         
+        $response = $this->postJson('/api/v1/admin/login', [
             'email' => $admin->email,
-            'password' => $admin->password
+            'password' => 'admin'
         ]);
 
         $response->assertStatus(200)
             ->assertJsonStructure([
-                'token',
-                'name',
-                'email',
-                'phone_number',
-                'address',
-                'marketing_preferences',
-                'avatar'
+                'message',
+                'data' => [
+                    'token',
+                    'name',
+                    'email',
+                    'phone_number',
+                    'address',
+                    'marketing_preferences',
+                    'avatar'
+                ]
             ]);
     }
 

@@ -21,7 +21,7 @@ class AuthController extends Controller
         if ($response->code === 200) {
             return response()->json([
                 'message' => 'Login successful.',
-                'user' => new LoginResource($response->data),
+                'data' => new LoginResource($response->data),
             ], 200);
         }
 
