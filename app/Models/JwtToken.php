@@ -10,6 +10,11 @@ class JwtToken extends Model
 {
     use HasFactory;
 
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var array<string>
+     */
     protected $fillable = [
         'user_id',
         'unique_id',
@@ -17,7 +22,7 @@ class JwtToken extends Model
         'restrictions',
         'permissions',
         'expires_at',
-        'last_used_at'
+        'last_used_at',
     ];
 
     /**
