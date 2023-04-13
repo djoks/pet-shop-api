@@ -78,4 +78,24 @@ else
   echo -e "${YELLOW}\n9. Storage symlink already exists.\n${NC}"
 fi
 
+# Create SQLite database file if it doesn't exist
+if [ ! -f database/database.sqlite ]
+then 
+  docker-compose -f docker/docker-compose.yml exec -T php touch database/database.sqlite
+fi
+
+# Generate private and public keys
+echo -e "${GREEN}\n10. Generating RSA key...\n${NC}"
+if [ ! -f "storage/app/private_key.pem" ]; then
+  docker-compose -f docker/docker-compose.yml exec -T php openssl genpkey -algorithm RSA -out storage/app/private_key.pem -pkeyopt rsa_keygen_bits:2048
+fi
+
+if [ ! -f "storage/app/public_key.pem" ]; then
+  docker-compose -f docker/docker-compose.yml exec -T php openssl rsa -in storage/app/private_key.pem -pubout -out storage/app/public_key.pem
+fi
+
+# Change ownership & set permissions
+docker-compose -f docker/docker-compose.yml exec -T php chown -R www-data:www-data storage/app/private_key.pem storage/app/public_key.pem
+docker-compose -f docker/docker-compose.yml exec -T php chmod 600 storage/app/private_key.pem storage/app/public_key.pem
+
 echo -e "${GREEN}\nAll done!\n${NC}"

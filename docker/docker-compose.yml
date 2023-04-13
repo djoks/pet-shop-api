@@ -59,6 +59,27 @@ services:
     networks:
       - app-network
 
+  phpunit:
+    image: php:8.2-fpm
+    build:
+      context: .
+      dockerfile: ./php/Dockerfile.testing
+    volumes:
+      - ../:/var/www/html
+    environment:
+      - APP_ENV=testing
+      - DB_CONNECTION=mysql
+      - DB_HOST=mysql
+      - DB_PORT=3306
+      - DB_DATABASE=laravel_testing
+      - DB_USERNAME=root
+      - DB_PASSWORD=secret
+    depends_on:
+      - php
+      - mysql
+    networks:
+      - app-network
+
 volumes:
   mysql-data:
 networks:
