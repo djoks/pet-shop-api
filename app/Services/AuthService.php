@@ -46,6 +46,34 @@ class AuthService
         ];
     }
 
+    public function loginAdministrator(
+        string $email,
+        string $password
+    ): object {
+        if (
+            auth()->attempt([
+                'email' => $email,
+                'password' => $password,
+                'is_admin' => true
+            ])
+        ) {
+            $user = auth()->user();
+            $user['token'] = $this->tokenService->generate(user: $user);
+            $message = 'Login successful.';
+            $code = 200;
+        } else {
+            $user = null;
+            $message = 'Login failed, invalid credentials.';
+            $code = 403;
+        }
+
+        return (object) [
+            'code' => $code,
+            'message' => $message,
+            'data' => $user,
+        ];
+    }
+
     public function verify(Token $token): object
     {
         $validator = new Validator();

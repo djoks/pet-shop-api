@@ -34,6 +34,30 @@ class AuthController extends Controller
         );
     }
 
+    public function loginAdministrator(
+        LoginRequest $request,
+        AuthService $authService
+    ): JsonResponse {
+        $response = $authService->loginAdministrator(
+            email: $request->email,
+            password: $request->password
+        );
+
+        if ($response->code === 200) {
+            return response()->json([
+                'message' => 'Login successful.',
+                'data' => new LoginResource($response->data),
+            ], 200);
+        }
+
+        return response()->json(
+            [
+                'message' => $response->message,
+            ],
+            $response->code
+        );
+    }
+
     public function logout(Request $request, AuthService $authService)
     {
         $response = $authService->logout($request->bearerToken());

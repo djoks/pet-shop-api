@@ -20,12 +20,25 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 
 Route::prefix('v1')->group(function (): void {
+    // Un-Protected Admin Routes
     Route::prefix('admin')->group(function (): void {
+        Route::post('login', [AuthController::class, 'loginAdministrator']);
+    });
+
+    // Un-Protected User Routes
+    Route::prefix('user')->group(function (): void {
         Route::post('login', [AuthController::class, 'login']);
     });
 
+    // Protected Routes
     Route::middleware(['auth.check'])->group(function (): void {
+        // Admin
         Route::middleware(['admin.check'])->prefix('admin')->group(function (): void {
+            Route::get('logout', [AuthController::class, 'logout']);
+        });
+
+        // User
+        Route::prefix('user')->group(function (): void {
             Route::get('logout', [AuthController::class, 'logout']);
         });
     });
