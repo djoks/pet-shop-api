@@ -4,7 +4,9 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\OrderController;
 use App\Http\Controllers\ProductController;
+use App\Http\Controllers\OrderStatusController;
 
 /*
 |--------------------------------------------------------------------------
@@ -35,10 +37,16 @@ Route::prefix('v1')->group(function (): void {
     // Protected Routes
     Route::middleware(['auth.check'])->group(function (): void {
         // Admin
-        Route::prefix('admin')->group(function (): void {
-            Route::get('logout', [AuthController::class, 'logout']);
-            Route::post('create', [UserController::class, 'store']);
-            Route::get('user-listing', [UserController::class, 'index']);
+        Route::middleware(['admin.check'])->group(function (): void {
+            Route::prefix('admin')->group(function (): void {
+                Route::get('logout', [AuthController::class, 'logout']);
+                Route::post('create', [UserController::class, 'store']);
+                Route::get('user-listing', [UserController::class, 'index']);
+            });
+
+            Route::get('order-statuses', [OrderStatusController::class, 'index']);
+            Route::get('orders', [OrderController::class, 'index']);
+            Route::patch('order/{uuid}', [OrderController::class, 'update']);
         });
 
         // User
