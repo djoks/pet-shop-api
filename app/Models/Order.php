@@ -16,9 +16,9 @@ class Order extends Model
      * @var array<string>
      */
     protected $fillable = [
-        'user_id',
-        'order_status_id',
-        'payment_id',
+        'user_uuid',
+        'order_status_uuid',
+        'payment_uuid',
         'uuid',
         'products',
         'address',
@@ -41,7 +41,7 @@ class Order extends Model
      */
     public function user(): BelongsTo
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(User::class, 'user_uuid', 'uuid');
     }
 
     /**
@@ -49,7 +49,7 @@ class Order extends Model
      */
     public function orderStatus(): BelongsTo
     {
-        return $this->belongsTo(OrderStatus::class);
+        return $this->belongsTo(OrderStatus::class, 'order_status_uuid', 'uuid');
     }
 
     /**
@@ -57,6 +57,6 @@ class Order extends Model
      */
     public function payment(): BelongsTo
     {
-        return $this->belongsTo(Payment::class);
+        return $this->belongsTo(Payment::class, 'payment_uuid', 'uuid');
     }
 }

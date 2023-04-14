@@ -18,9 +18,8 @@ class DatabaseSeeder extends Seeder
             CategoriesTableSeeder::class,
             OrderStatusesTableSeeder::class,
             ProductsTableSeeder::class,
-            PaymentsSeeder::class,
-            OrdersSeeder::class,
+            PaymentsTableSeeder::class,
+            OrdersableSeeder::class,
         ]);
-
     }
 }
