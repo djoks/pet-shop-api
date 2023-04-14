@@ -28,7 +28,13 @@ class AuthService
         string $email,
         string $password
     ): object {
-        if (auth()->attempt(['email' => $email, 'password' => $password])) {
+        if (auth()->attempt(
+            [
+                'email' => $email,
+                'password' => $password,
+                'is_admin' => false
+            ]
+        )) {
             $user = auth()->user();
             $user['token'] = $this->tokenService->generate(user: $user);
             $message = 'Login successful.';
