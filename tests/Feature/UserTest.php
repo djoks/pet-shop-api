@@ -40,7 +40,26 @@ class UserTest extends TestCase
         ])
             ->getJson('/api/v1/admin/user-listing');
 
-        $response->assertStatus(200);
+        $response->assertStatus(200)
+            ->assertJsonStructure([
+                'data' => [
+                    '*' => [
+                        'first_name',
+                        'last_name',
+                        'phone_number',
+                        'email',
+                        'address',
+                        'is_admin',
+                        'is_marketing',
+                        'avatar'
+                    ]
+                ],
+                'page',
+                'limit',
+                'total',
+                'sort_by',
+                'desc'
+            ]);
     }
 
     /** @test */
