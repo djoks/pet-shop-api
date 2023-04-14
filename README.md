@@ -18,3 +18,9 @@ The project is built on the Laravel 10 framework and uses a PHP version of 8.2
 
 After deploying the application you can find the docs at the following path in your browser:
 `/api/v1/documentation`.
+
+## L5: State Machine Developer Tasks
+
+Please find the tasks by visiting the following url in your browser:
+
+https://docs.google.com/document/d/1nLDXGWw-gHOuyD-_kuNQsRCuCRiPciS35cM_9quusfU/edit?usp=sharing
