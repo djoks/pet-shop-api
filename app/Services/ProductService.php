@@ -3,48 +3,17 @@
 namespace App\Services;
 
 use App\Models\User;
+use App\Models\Product;
 use Illuminate\Support\Str;
 
-class UserService
+class ProductService
 {
-    protected \App\Services\TokenService $tokenService;
-
-    public function __construct(\App\Services\TokenService $tokenService)
-    {
-        $this->tokenService = $tokenService;
-    }
-
-    /**
-     * @return App\Models\User|null
-     */
-    public function getByUuid(string $uuid)
-    {
-        $user = User::where('uuid', $uuid)->first();
-        if (!$user) {
-            return (object) [
-                'code' => 404,
-                'message' => 'User not found.',
-            ];
-        }
-
-        return $user;
-    }
-
-    /**
-     * @return boolean
-     */
-    public function isAdmin(string $uuid)
-    {
-        $user = $this->getByUuid($uuid);
-        return $user->is_admin;
-    }
-
     /**
      * @return array<App\Models\User>
      */
     public function getAll($page = 1, $limit = 10, $sortBy = 'id', $desc = false)
     {
-        $query = User::query();
+        $query = Product::query();
         $query->orderBy($sortBy, $desc ? 'desc' : 'asc');
         $total = $query->count();
         $query->skip(($page - 1) * $limit)->take($limit);
