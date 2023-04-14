@@ -12,7 +12,7 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule): void
     {
-        $schedule->command('db:truncate-and-seed')->everyMinute();
+        $schedule->command('db:truncate-and-seed')->daily();
     }
 
     /**

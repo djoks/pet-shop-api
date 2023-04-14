@@ -19,7 +19,7 @@ class UserService
     }
 
     /**
-     * @return App\Models\User
+     * @return App\Models\User|null
      */
     public function getByUuid(string $uuid)
     {
@@ -46,9 +46,24 @@ class UserService
     /**
      * @return array<App\Models\User>
      */
-    public function getAll()
+    public function getAll($page = 1, $limit = 10, $sortBy = 'id', $desc = false)
     {
-        return User::all();
+        $query = User::query();
+        $query->orderBy($sortBy, $desc ? 'desc' : 'asc');
+        $total = $query->count();
+        $query->skip(($page - 1) * $limit)->take($limit);
+        $users = $query->get();
+
+        $response = [
+            'data' => $users,
+            'page' => (int) $page,
+            'limit' => (int) $limit,
+            'total' => $total,
+            'sort_by' => $sortBy,
+            'desc' => (bool) $desc,
+        ];
+
+        return $response;
     }
 
     public function create(array $params)

@@ -46,6 +46,10 @@ class ValidateJwtToken
             $token->claims()->get('user_uuid')
         );
 
+        if (!$user) {
+            return response()->json(['message' => 'Invalid bearer token.'], 401);
+        }
+
         auth()->setUser($user);
 
         if ($response->code !== 200) {
