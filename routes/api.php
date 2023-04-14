@@ -3,6 +3,7 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\UserController;
 
 /*
 |--------------------------------------------------------------------------
@@ -35,6 +36,7 @@ Route::prefix('v1')->group(function (): void {
         // Admin
         Route::middleware(['admin.check'])->prefix('admin')->group(function (): void {
             Route::get('logout', [AuthController::class, 'logout']);
+            Route::get('user-listing', [UserController::class, 'index']);
         });
 
         // User

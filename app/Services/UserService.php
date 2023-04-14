@@ -41,4 +41,12 @@ class UserService
         $user = $this->getByUuid($uuid);
         return $user->is_admin;
     }
+
+    /**
+     * @return array<App\Models\User>
+     */
+    public function getAll()
+    {
+        return User::all();
+    }
 }
