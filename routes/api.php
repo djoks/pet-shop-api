@@ -34,7 +34,7 @@ Route::prefix('v1')->group(function (): void {
     // Protected Routes
     Route::middleware(['auth.check'])->group(function (): void {
         // Admin
-        Route::middleware(['admin.check'])->prefix('admin')->group(function (): void {
+        Route::prefix('admin')->group(function (): void {
             Route::get('logout', [AuthController::class, 'logout']);
             Route::post('create', [UserController::class, 'store']);
             Route::get('user-listing', [UserController::class, 'index']);

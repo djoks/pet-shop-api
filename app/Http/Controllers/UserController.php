@@ -21,8 +21,23 @@ class UserController extends Controller
      */
     public function index()
     {
-        $users = $this->userService->getAll();
-        return UserResource::collection($users);
+        $data = $this->userService->getAll(
+            page: request()->query('page', 1),
+            limit: request()->query('limit', 10),
+            sortBy: request()->query('sortBy', 'id'),
+            desc: request()->query('desc', false)
+        );
+
+        $users = UserResource::collection($data['data']);
+
+        return response()->json([
+            'data' => $users,
+            'page' => (int) $data['page'],
+            'limit' => (int) $data['limit'],
+            'total' => $data['total'],
+            'sort_by' => $data['sort_by'],
+            'desc' => (bool) $data['desc'],
+        ], 200);
     }
 
     /**
