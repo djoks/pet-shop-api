@@ -2,6 +2,8 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\AuthController;
+use App\Http\Controllers\UserController;
 
 /*
 |--------------------------------------------------------------------------
@@ -16,4 +18,31 @@ use Illuminate\Support\Facades\Route;
 
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
+});
+
+Route::prefix('v1')->group(function (): void {
+    // Un-Protected Admin Routes
+    Route::prefix('admin')->group(function (): void {
+        Route::post('login', [AuthController::class, 'loginAdministrator']);
+    });
+
+    // Un-Protected User Routes
+    Route::prefix('user')->group(function (): void {
+        Route::post('login', [AuthController::class, 'login']);
+    });
+
+    // Protected Routes
+    Route::middleware(['auth.check'])->group(function (): void {
+        // Admin
+        Route::middleware(['admin.check'])->prefix('admin')->group(function (): void {
+            Route::get('logout', [AuthController::class, 'logout']);
+            Route::post('create', [UserController::class, 'store']);
+            Route::get('user-listing', [UserController::class, 'index']);
+        });
+
+        // User
+        Route::prefix('user')->group(function (): void {
+            Route::get('logout', [AuthController::class, 'logout']);
+        });
+    });
 });

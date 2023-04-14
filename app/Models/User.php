@@ -30,7 +30,7 @@ class User extends Authenticatable
         'avatar',
         'address',
         'phone_number',
-        'is_marketing'
+        'is_marketing',
     ];
 
     /**
@@ -39,7 +39,7 @@ class User extends Authenticatable
      * @var array<int, string>
      */
     protected $hidden = [
-        'password'
+        'password',
     ];
 
     /**
