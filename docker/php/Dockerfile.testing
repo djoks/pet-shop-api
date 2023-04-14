@@ -25,6 +25,21 @@ RUN docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd zip
 RUN if ! pecl list | grep -i redis; then pecl install redis; fi \
     && docker-php-ext-enable redis
 
+RUN apt-get update --fix-missing && \
+    apt-get install -y supervisor --no-install-recommends && \
+    mkdir -p /var/log/supervisor /var/run/supervisor
+
+RUN chown -R www-data:www-data /var/log/supervisor
+
+RUN mkdir -p /etc/supervisor/conf.d/
+
+RUN chown -R www-data:www-data /var/log/supervisor /var/run/supervisor
+
+ENV PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/bin/supervisord"
+
+# Copy supervisord config file
+COPY ./supervisor/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
+
 # Get latest Composer
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 

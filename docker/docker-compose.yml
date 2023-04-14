@@ -55,7 +55,7 @@ services:
       - php
     environment:
       - PATH=$PATH:/usr/local/bin
-    command: ["supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf", "-n", "-u", "www-data", "-i", "supervisor.pid", "-l", "/var/log/supervisor/supervisord.log", "-j", "/var/run/supervisor/supervisord.pid"]
+    command: ["/usr/bin/supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf", "-n", "-u", "www-data", "-i", "supervisor.pid", "-l", "/var/log/supervisor/supervisord.log", "-j", "/var/run/supervisor/supervisord.pid"]
     networks:
       - app-network
 
