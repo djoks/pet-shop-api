@@ -48,7 +48,9 @@ class AuthTest extends TestCase
     {
         $admin = User::factory()->create([
             'uuid' => Str::uuid(),
-            'password' => Hash::make('admin')
+            'is_admin' => true,
+            'email' => 'admin@buckhill.co.uk',
+            'password' => Hash::make('admin'),
         ]);
 
         $response = $this->postJson('/api/v1/admin/login', [

@@ -42,7 +42,7 @@ class AuthService
         } else {
             $user = null;
             $message = 'Login failed, invalid credentials.';
-            $code = 403;
+            $code = 401;
         }
 
         return (object) [
@@ -70,7 +70,7 @@ class AuthService
         } else {
             $user = null;
             $message = 'Login failed, invalid credentials.';
-            $code = 403;
+            $code = 401;
         }
 
         return (object) [

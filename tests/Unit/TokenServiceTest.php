@@ -13,6 +13,14 @@ use Lcobucci\JWT\Validation\RequiredConstraintsViolated;
 
 class TokenServiceTest extends TestCase
 {
+    protected TokenService $tokenService;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+        $this->tokenService = app(TokenService::class);
+    }
+
     /** @test */
     public function can_generate_jwt_token(): void
     {
@@ -21,11 +29,8 @@ class TokenServiceTest extends TestCase
             'uuid' => Str::uuid()
         ]);
 
-        // Instantiate the TokenService
-        $tokenService = new TokenService();
-
         // Call the function to generate the JWT token with the user object
-        $token = $tokenService->generate($user);
+        $token = $this->tokenService->generate($user);
 
         // Verify that the token is not null and not empty
         $this->assertNotNull($token);
@@ -38,11 +43,8 @@ class TokenServiceTest extends TestCase
         $request = new Request();
         $request->headers->set('User-Agent', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3');
 
-        // Instantiate the TokenService
-        $tokenService = new TokenService();
-
         // Call the function to generate the JWT token title with the request object
-        $title = $tokenService->generateTitle();
+        $title = $this->tokenService->generateTitle();
 
         // Verify that the token is not null and not empty
         $this->assertNotNull($title);
