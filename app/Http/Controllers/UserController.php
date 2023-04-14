@@ -4,16 +4,24 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Services\UserService;
+use App\Http\Requests\UserRequest;
 use App\Http\Resources\UserResource;
 
 class UserController extends Controller
 {
+    protected UserService $userService;
+
+    public function __construct(UserService $userService)
+    {
+        $this->userService = $userService;
+    }
+
     /**
      * Display a listing of the resource.
      */
-    public function index(UserService $userService)
+    public function index()
     {
-        $users = $userService->getAll();
+        $users = $this->userService->getAll();
         return UserResource::collection($users);
     }
 
@@ -28,9 +36,19 @@ class UserController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(UserRequest $request)
     {
-        //
+        try {
+            $this->userService->create($request->validated());
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => $e->getMessage()
+            ], 500);
+        }
+
+        return response()->json([
+            'message' => 'User created successfully.'
+        ], 200);
     }
 
     /**

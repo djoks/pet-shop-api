@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\User;
 use Lcobucci\JWT\Token;
 use App\Models\JwtToken;
+use Illuminate\Support\Str;
 use Lcobucci\JWT\Validation\Validator;
 use Lcobucci\JWT\Validation\Constraint\RelatedTo;
 
@@ -48,5 +49,21 @@ class UserService
     public function getAll()
     {
         return User::all();
+    }
+
+    public function create(array $params)
+    {
+        return User::create([
+            'first_name' => $params['first_name'],
+            'last_name' => $params['last_name'],
+            'uuid' => Str::uuid(),
+            'email' => $params['email'],
+            'password' => $params['password'],
+            'is_admin' => $params['is_admin'],
+            'avatar' => $params['avatar'] ?? '',
+            'address' => $params['address'],
+            'phone_number' => $params['phone_number'],
+            'is_marketing' => $params['is_marketing'],
+        ]);
     }
 }
