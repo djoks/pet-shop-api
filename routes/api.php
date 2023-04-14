@@ -22,12 +22,11 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 Route::prefix('v1')->group(function (): void {
     Route::prefix('admin')->group(function (): void {
         Route::post('login', [AuthController::class, 'login']);
-        Route::post('logout', [AuthController::class, 'logout']);
     });
 
     Route::middleware(['auth.check'])->group(function (): void {
         Route::middleware(['admin.check'])->prefix('admin')->group(function (): void {
-            Route::get('test', [AuthController::class, 'users']);
+            Route::get('logout', [AuthController::class, 'logout']);
         });
     });
 });

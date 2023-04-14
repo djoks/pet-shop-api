@@ -4,16 +4,21 @@ namespace App\Services;
 
 use Lcobucci\JWT\Token;
 use App\Models\JwtToken;
+use Illuminate\Http\Request;
 use Lcobucci\JWT\Validation\Validator;
 use Lcobucci\JWT\Validation\Constraint\RelatedTo;
 
 class AuthService
 {
     protected \App\Services\TokenService $tokenService;
+    protected \App\Services\UserService $userService;
 
-    public function __construct(\App\Services\TokenService $tokenService)
-    {
+    public function __construct(
+        \App\Services\TokenService $tokenService,
+        \App\Services\UserService $userService
+    ) {
         $this->tokenService = $tokenService;
+        $this->userService = $userService;
     }
 
     /**
@@ -72,5 +77,23 @@ class AuthService
             'code' => 200,
             'message' => 'Bearer token is valid.',
         ];
+    }
+
+    public function logout(string $bearerToken): object
+    {
+        $token = $this->tokenService->decode($bearerToken);
+
+        if (!$token) {
+            return (object) ['code' => 400, 'message' => 'Invalid bearer token.'];
+        }
+
+        // Find the token in the database and delete it.
+        $jwtToken = JwtToken::where('unique_id', $token->claims()->get('jti'))->first();
+        $jwtToken->delete();
+
+        // Log the user out.
+        auth()->logout();
+
+        return (object) ['code' => 200, 'message' => 'Successfully logged out.'];
     }
 }

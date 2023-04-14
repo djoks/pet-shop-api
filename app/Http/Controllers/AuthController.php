@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Http\Request;
 use App\Services\AuthService;
 use Illuminate\Http\JsonResponse;
 use App\Http\Requests\LoginRequest;
@@ -33,8 +34,10 @@ class AuthController extends Controller
         );
     }
 
-    public function users(): string
+    public function logout(Request $request, AuthService $authService)
     {
-        return "hey!";
+        $response = $authService->logout($request->bearerToken());
+
+        return response()->json(['message' => $response->message], $response->code);
     }
 }
