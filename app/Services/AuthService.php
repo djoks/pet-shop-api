@@ -4,7 +4,6 @@ namespace App\Services;
 
 use Lcobucci\JWT\Token;
 use App\Models\JwtToken;
-use Illuminate\Http\Request;
 use Lcobucci\JWT\Validation\Validator;
 use Lcobucci\JWT\Validation\Constraint\RelatedTo;
 
