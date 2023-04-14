@@ -38,10 +38,7 @@ class UserTest extends TestCase
         $response = $this->withHeaders([
             'Authorization' => "Bearer $token"
         ])
-            ->getJson('/api/v1/admin/user-listing', [
-                'email' => $admin->email,
-                'password' => 'admin'
-            ]);
+            ->getJson('/api/v1/admin/user-listing');
 
         $response->assertStatus(200);
     }
