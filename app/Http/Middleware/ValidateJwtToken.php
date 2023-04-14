@@ -5,6 +5,7 @@ namespace App\Http\Middleware;
 use Closure;
 use Illuminate\Http\Request;
 use App\Services\AuthService;
+use App\Services\UserService;
 use App\Services\TokenService;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -12,12 +13,17 @@ class ValidateJwtToken
 {
     protected TokenService $tokenService;
     protected AuthService $authService;
+    protected UserService $userService;
 
 
-    public function __construct(TokenService $tokenService, AuthService $authService)
-    {
+    public function __construct(
+        TokenService $tokenService,
+        AuthService $authService,
+        UserService $userService
+    ) {
         $this->tokenService = $tokenService;
         $this->authService = $authService;
+        $this->userService = $userService;
     }
 
     /**
@@ -35,6 +41,12 @@ class ValidateJwtToken
 
         $token = $this->tokenService->decode($bearerToken);
         $response = $this->authService->verify($token);
+
+        $user = $this->userService->getByUuid(
+            $token->claims()->get('user_uuid')
+        );
+
+        auth()->setUser($user);
 
         if ($response->code !== 200) {
             return response()->json(['message' => $response->message], $response->code);
