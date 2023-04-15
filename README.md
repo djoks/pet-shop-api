@@ -10,9 +10,9 @@ The project is built on the Laravel 10 framework and uses a PHP version of 8.2
 
 ## Getting Started
 
-1. After cloning the project run `./run.sh` to deploy the project. Make sure the file is executable before running and you have a stable internet connection. The project will download and build all images, containers and packages.
+1. After cloning the project run `./run.sh --fresh` to deploy the project. Make sure the file is executable before running and you have a stable internet connection. The project will download and build all images, containers and packages.
 
-2. Alternatively you can also `run sh run.sh`.
+2. Alternatively you can also `run sh run.sh --fresh`.
 
 ## API Documentation
 
